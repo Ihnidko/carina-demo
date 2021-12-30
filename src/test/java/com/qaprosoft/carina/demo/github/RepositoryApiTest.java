@@ -15,13 +15,6 @@ import org.testng.annotations.Test;
 
 public class RepositoryApiTest implements IAbstractTest {
 
-    @Test(description = "Get all repositories")
-    public void testGetAllRepositories() {
-         GetRepositoriesMethod getRepositoriesMethod = new GetRepositoriesMethod();
-         getRepositoriesMethod.expectResponseStatus(HttpResponseStatusType.OK_200);
-         getRepositoriesMethod.callAPI();
-         getRepositoriesMethod.validateResponseAgainstSchema("api/github/_get/repos_sheme.json");
-    }
 
     @Test(description = "Create repository")
     public void testCreateRepository() {
@@ -48,6 +41,13 @@ public class RepositoryApiTest implements IAbstractTest {
         postRepositoryMethod.callAPI();
     }
 
+    @Test(description = "Get repository")
+    public void testGetRepository() {
+        GetRepositoryMethod getRepositoryMethod = new GetRepositoryMethod(randomRepoName, repoOwner);
+        getRepositoryMethod.expectResponseStatus(HttpResponseStatusType.OK_200);
+        getRepositoryMethod.callAPI();
+        getRepositoryMethod.validateResponse(JSONCompareMode.LENIENT);
+    }
     @Test(description = "")
     public void testGetRepositoryWhichNotExist() {
         String randomRepoName = RandomStringUtils.randomAlphabetic(10);
@@ -59,6 +59,14 @@ public class RepositoryApiTest implements IAbstractTest {
         String rs = getRepositoryMethod.callAPI().asString();
         String actualNotFoundMessage = new JsonPath(rs).getString("message");
         Assert.assertEquals(actualNotFoundMessage, expectedNotFoundMessage, "Actual and expected not found message different");
+    }
+
+    @Test(description = "Get all repositories")
+    public void testGetAllRepositories() {
+         GetRepositoriesMethod getRepositoriesMethod = new GetRepositoriesMethod();
+         getRepositoriesMethod.expectResponseStatus(HttpResponseStatusType.OK_200);
+         getRepositoriesMethod.callAPI();
+         getRepositoriesMethod.validateResponseAgainstSchema("api/github/_get/repos_sheme.json");
     }
 
     @Test(description = "Remove created repository")
